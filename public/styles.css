@@ -546,6 +546,30 @@ dialog::backdrop { background: rgba(10, 12, 20, 0.5); backdrop-filter: blur(2px)
 .auth-submit { width: 100%; justify-content: center; padding: 10px 14px; margin-top: 4px; }
 .auth-error { color: var(--danger-strong); font-size: 12.5px; margin: 0; }
 
+.input-with-action { position: relative; display: block; }
+.input-with-action input { width: 100%; padding-right: 40px; }
+.input-action-btn {
+  position: absolute;
+  top: 50%;
+  right: 4px;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: none;
+  background: transparent;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+}
+.input-action-btn:hover { color: var(--text-secondary); background: var(--border); }
+.input-action-btn svg { width: 17px; height: 17px; }
+.input-action-btn .icon-eye-off { display: none; }
+.input-action-btn.is-active .icon-eye { display: none; }
+.input-action-btn.is-active .icon-eye-off { display: block; }
+
 /* --- Topbar auth actions --- */
 .topbar-actions { display: flex; align-items: center; gap: 8px; }
 
