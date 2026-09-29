@@ -50,7 +50,7 @@
     const enrolment = document.getElementById('enrolment').value.trim();
     const password = document.getElementById('password').value;
 
-    const { data, error } = await signIn(enrolment, password);
+    const { error } = await signIn(enrolment, password);
 
     if (error) {
       errorEl.textContent = 'Incorrect enrollment number or password.';
@@ -60,7 +60,6 @@
       return;
     }
 
-    await ensureSeeded(data.user.id);
     window.location.href = 'index.html';
   });
 </script>
