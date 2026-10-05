@@ -8,7 +8,9 @@ function mapProfileFromDb(row) {
     institution: row.institution,
     studyCenter: row.study_center,
     admissionCycle: row.admission_cycle,
-    deliveryMode: row.delivery_mode
+    deliveryMode: row.delivery_mode,
+    programmeCode: row.programme_code,
+    lastSyncedAt: row.last_synced_at
   };
 }
 
@@ -102,7 +104,7 @@ async function loadData() {
   if (!session) return;
   state.userId = session.user.id;
 
-  await ensureSeeded(state.userId);
+  const isNewProfile = await ensureProfile(state.userId, session.user.email);
 
   const [{ data: profileRow, error: profileError }, { data: courseRows, error: coursesError }] = await Promise.all([
     supabaseClient.from('profile').select('*').eq('user_id', state.userId).maybeSingle(),
@@ -119,6 +121,26 @@ async function loadData() {
     courses: (courseRows || []).map(mapCourseFromDb)
   };
   render();
+
+  if (isNewProfile) {
+    await runSync({ silent: true });
+  }
+}
+
+async function runSync({ silent } = {}) {
+  const btn = document.getElementById('syncBtn');
+  const originalLabel = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = 'Syncing…';
+  try {
+    await syncGradecard();
+    await loadData();
+  } catch (err) {
+    if (!silent) alert(err.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = originalLabel;
+  }
 }
 
 function render() {
@@ -139,11 +161,25 @@ function initials(name) {
     .toUpperCase() || '?';
 }
 
+function formatSyncTime(iso) {
+  if (!iso) return 'never';
+  const diffMs = Date.now() - new Date(iso).getTime();
+  const mins = Math.round(diffMs / 60000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hours = Math.round(mins / 60);
+  if (hours < 24) return `${hours}h ago`;
+  return new Date(iso).toLocaleDateString();
+}
+
 function renderHeader() {
   const { student, courses } = state.data;
   document.getElementById('avatar').textContent = initials(student.name);
-  document.getElementById('studentName').textContent = student.name;
-  document.getElementById('studentProgram').textContent = `${student.program} · ${student.institution}`;
+  document.getElementById('studentName').textContent = student.name || student.enrolmentNumber;
+  document.getElementById('studentProgram').textContent = student.name
+    ? `${student.program} · ${student.institution}`
+    : 'Syncing your record from IGNOU for the first time…';
+  document.getElementById('syncStatus').textContent = `Last synced: ${formatSyncTime(student.lastSyncedAt)}`;
 
   const meta = document.getElementById('headerMeta');
   meta.innerHTML = '';
@@ -435,6 +471,7 @@ document.getElementById('deleteCourseBtn').addEventListener('click', async () =>
 });
 
 document.getElementById('logoutBtn').addEventListener('click', signOut);
+document.getElementById('syncBtn').addEventListener('click', () => runSync());
 
 // --- Theme toggle ---
 
