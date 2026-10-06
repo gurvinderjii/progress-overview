@@ -14,6 +14,19 @@ async function signIn(enrolmentNumber, password) {
   });
 }
 
+// Self-service signup: no real email is ever collected, so there's no
+// email-confirmation step and no password-reset-by-email — this only
+// works with "Confirm email" turned off in Supabase Auth settings.
+// Anyone who knows an enrollment number can claim an account for it; the
+// grade card data itself is already public on IGNOU's site with no auth
+// either way, so this is an accepted tradeoff, not an oversight.
+async function signUpWithEnrolment(enrolmentNumber, password) {
+  return supabaseClient.auth.signUp({
+    email: emailForEnrolment(enrolmentNumber),
+    password
+  });
+}
+
 async function signOut() {
   await supabaseClient.auth.signOut();
   window.location.href = 'login.html';

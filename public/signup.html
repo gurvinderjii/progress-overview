@@ -3,35 +3,39 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sign in — Degree Progress</title>
+<title>Create Account — Degree Progress</title>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body class="auth-body">
 <div class="auth-page">
-  <form id="loginForm" class="auth-card">
+  <form id="signupForm" class="auth-card">
     <span class="topbar-logo" aria-hidden="true" style="margin: 0 auto 6px;">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5"/></svg>
     </span>
-    <h1>Degree Progress</h1>
-    <p class="muted auth-sub">Sign in to view your dashboard</p>
+    <h1>Create Account</h1>
+    <p class="muted auth-sub">For IGNOU BCAOL students — enter your enrollment number and choose a password</p>
 
     <label>Enrollment Number
       <input id="enrolment" type="text" inputmode="numeric" autocomplete="username" required autofocus>
     </label>
     <label>Password
       <span class="input-with-action">
-        <input id="password" type="password" autocomplete="current-password" required>
+        <input id="password" type="password" autocomplete="new-password" minlength="6" required>
         <button type="button" id="togglePassword" class="input-action-btn" aria-label="Show password" aria-pressed="false">
           <svg class="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg>
           <svg class="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-7 0-11-7-11-7a21.4 21.4 0 0 1 5.06-5.94M9.9 4.24A10.4 10.4 0 0 1 12 5c7 0 11 7 11 7a21.4 21.4 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><path d="M1 1l22 22"/></svg>
         </button>
       </span>
     </label>
+    <label>Confirm Password
+      <input id="confirmPassword" type="password" autocomplete="new-password" minlength="6" required>
+    </label>
+    <p class="muted auth-note">There's no email on file, so there's no "forgot password" link — if you lose it, you'll need to ask an admin to reset it.</p>
 
     <p id="authError" class="auth-error" hidden></p>
 
-    <button type="submit" class="btn btn-primary auth-submit" id="submitBtn">Sign In</button>
-    <p class="muted auth-switch">New here? <a href="signup.html">Create an account</a></p>
+    <button type="submit" class="btn btn-primary auth-submit" id="submitBtn">Create Account</button>
+    <p class="muted auth-switch">Already have an account? <a href="login.html">Sign in</a></p>
   </form>
 </div>
 
@@ -54,26 +58,52 @@
     toggleBtn.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
   });
 
-  const form = document.getElementById('loginForm');
+  const form = document.getElementById('signupForm');
   const errorEl = document.getElementById('authError');
   const submitBtn = document.getElementById('submitBtn');
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     errorEl.hidden = true;
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Signing in…';
 
     const enrolment = document.getElementById('enrolment').value.trim();
     const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
 
-    const { error } = await signIn(enrolment, password);
+    if (!/^\d+$/.test(enrolment)) {
+      errorEl.textContent = 'Enrollment number should contain digits only.';
+      errorEl.hidden = false;
+      return;
+    }
+    if (password !== confirmPassword) {
+      errorEl.textContent = 'Passwords do not match.';
+      errorEl.hidden = false;
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Creating account…';
+
+    const { data, error } = await signUpWithEnrolment(enrolment, password);
 
     if (error) {
-      errorEl.textContent = 'Incorrect enrollment number or password.';
+      errorEl.textContent = /registered|exists/i.test(error.message)
+        ? 'An account for this enrollment number already exists — try signing in instead.'
+        : error.message;
       errorEl.hidden = false;
       submitBtn.disabled = false;
-      submitBtn.textContent = 'Sign In';
+      submitBtn.textContent = 'Create Account';
+      return;
+    }
+
+    if (!data.session) {
+      // Shouldn't happen with email confirmation turned off, but handle it
+      // gracefully rather than leaving the user stuck on this page.
+      errorEl.textContent = 'Account created — please sign in.';
+      errorEl.hidden = false;
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Create Account';
+      setTimeout(() => { window.location.href = 'login.html'; }, 1500);
       return;
     }
 
