@@ -15,8 +15,10 @@ alter table public.profile add column if not exists gradecard_prog text;
 -- this course family, so BCAOL is a safe default for existing rows.
 update public.profile set programme_code = 'BCAOL' where programme_code is null;
 
--- This specific account (the original seeded student) is actually enrolled
--- under IGNOU's plain "BCA" (offline) programme code, not "BCAOL" - confirmed
--- against their real grade card. Without this, syncing would run against the
--- wrong prog= value and find no record at all.
-update public.profile set gradecard_prog = 'BCA' where enrolment_number = '0000000000';
+-- Example: if one of your accounts is actually enrolled under IGNOU's plain
+-- "BCA" (offline) programme code rather than "BCAOL" (online), set their
+-- override explicitly - otherwise syncing queries the wrong prog= value and
+-- finds no record at all. Replace the enrolment number below with the real
+-- one for that account, or skip this statement entirely if every account on
+-- your deployment is a genuine BCAOL (online) enrolment.
+-- update public.profile set gradecard_prog = 'BCA' where enrolment_number = '<enrolment number>';
