@@ -1,4 +1,35 @@
-const state = { data: null, userId: null };
+const state = { data: null, userId: null, viewMode: 'active' };
+
+(function initViewMode() {
+  let saved = null;
+  try {
+    saved = localStorage.getItem('viewMode');
+  } catch (e) {
+    /* private mode / storage blocked — fall back to default */
+  }
+  if (saved === 'active' || saved === 'all') state.viewMode = saved;
+})();
+
+// "Current Progress" scopes everything to semesters you've actually started
+// (at least one course with any activity), so six semesters of catalog data
+// doesn't dilute your stats with courses you haven't reached yet. "Full
+// Programme" shows the whole thing. Falls back to showing everything if
+// nothing has started yet, rather than rendering an empty page.
+function getActiveSemesters(courses) {
+  const active = new Set();
+  for (const c of courses) {
+    if (c.status !== 'NOT STARTED') active.add(c.semester);
+  }
+  return active;
+}
+
+function getVisibleCourses() {
+  const all = state.data.courses;
+  if (state.viewMode === 'all') return all;
+  const activeSemesters = getActiveSemesters(all);
+  if (activeSemesters.size === 0) return all;
+  return all.filter((c) => activeSemesters.has(c.semester));
+}
 
 function mapProfileFromDb(row) {
   return {
@@ -144,11 +175,18 @@ async function runSync({ silent } = {}) {
 }
 
 function render() {
+  renderViewSwitch();
   renderHeader();
   renderSummary();
   renderPending();
   renderPendingBreakdown();
   renderCourseGroups();
+}
+
+function renderViewSwitch() {
+  document.querySelectorAll('.view-switch-btn').forEach((btn) => {
+    btn.classList.toggle('is-active', btn.dataset.mode === state.viewMode);
+  });
 }
 
 function initials(name) {
@@ -173,7 +211,8 @@ function formatSyncTime(iso) {
 }
 
 function renderHeader() {
-  const { student, courses } = state.data;
+  const { student } = state.data;
+  const courses = getVisibleCourses();
   document.getElementById('avatar').textContent = initials(student.name);
   document.getElementById('studentName').textContent = student.name || student.enrolmentNumber;
   document.getElementById('studentProgram').textContent = student.name
@@ -237,7 +276,7 @@ function statCard({ icon, iconClass, value, label, bar }) {
 }
 
 function renderSummary() {
-  const { courses } = state.data;
+  const courses = getVisibleCourses();
   const totalCredits = courses.reduce((s, c) => s + (c.credits || 0), 0);
   const completedCredits = courses
     .filter((c) => c.status === 'COMPLETED')
@@ -256,7 +295,7 @@ function renderSummary() {
 }
 
 function renderPending() {
-  const pending = state.data.courses
+  const pending = getVisibleCourses()
     .filter((c) => c.status !== 'COMPLETED')
     .sort((a, b) => a.semester - b.semester || a.code.localeCompare(b.code));
   const list = document.getElementById('pendingList');
@@ -281,7 +320,7 @@ function renderPending() {
 }
 
 function renderPendingBreakdown() {
-  const { courses } = state.data;
+  const courses = getVisibleCourses();
   const groups = {
     assignment: { label: 'Assignment Pending', items: [] },
     theory: { label: 'Theory Exam Not Passed', items: [] },
@@ -323,7 +362,7 @@ function renderPendingBreakdown() {
 }
 
 function renderCourseGroups() {
-  const { courses } = state.data;
+  const courses = getVisibleCourses();
   const bySemester = {};
   for (const c of courses) {
     if (!bySemester[c.semester]) bySemester[c.semester] = [];
@@ -472,6 +511,18 @@ document.getElementById('deleteCourseBtn').addEventListener('click', async () =>
 
 document.getElementById('logoutBtn').addEventListener('click', signOut);
 document.getElementById('syncBtn').addEventListener('click', () => runSync());
+
+document.querySelectorAll('.view-switch-btn').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    state.viewMode = btn.dataset.mode;
+    try {
+      localStorage.setItem('viewMode', state.viewMode);
+    } catch (e) {
+      /* ignore persistence failure */
+    }
+    render();
+  });
+});
 
 // --- Theme toggle ---
 
