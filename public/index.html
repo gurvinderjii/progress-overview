@@ -44,9 +44,15 @@
 
     <div class="landing-hero-visual reveal">
       <div class="demo-card">
-        <div class="view-switch demo-switch" id="demoSwitch">
-          <button class="view-switch-btn is-active" data-demo="active" type="button">Current Progress</button>
-          <button class="view-switch-btn" data-demo="all" type="button">Full Programme</button>
+        <div class="demo-switch-row">
+          <div class="view-switch demo-switch" id="demoSwitch">
+            <button class="view-switch-btn is-active" data-demo="active" type="button">Current Progress</button>
+            <button class="view-switch-btn" data-demo="all" type="button">Full Programme</button>
+          </div>
+          <span class="info-tip" tabindex="0" aria-label="What do these two views mean?">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+            <span class="info-tip-text"><b>Current Progress</b> only counts semesters you've actually started. <b>Full Programme</b> shows your complete 6-semester picture.</span>
+          </span>
         </div>
         <div class="demo-main">
           <div class="demo-ring-wrap">
