@@ -41,7 +41,7 @@
 <script>
   (async function redirectIfSignedIn() {
     const session = await getSession();
-    if (session) window.location.href = 'index.html';
+    if (session) window.location.href = 'dashboard.html';
   })();
 
   const passwordInput = document.getElementById('password');
@@ -77,7 +77,7 @@
       return;
     }
 
-    window.location.href = 'index.html';
+    window.location.href = 'dashboard.html';
   });
 </script>
 </body>
