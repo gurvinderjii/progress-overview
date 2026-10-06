@@ -77,8 +77,8 @@ function parseGradeCard(html) {
   return { name, courses };
 }
 
-async function fetchGradeCard(enrolmentNumber) {
-  const url = `https://gradecard.ignou.ac.in/view_gradecard.aspx?eno=${encodeURIComponent(enrolmentNumber)}&prog=${SUPPORTED_PROGRAMME}&type=1`;
+async function fetchGradeCard(enrolmentNumber, gradecardProg) {
+  const url = `https://gradecard.ignou.ac.in/view_gradecard.aspx?eno=${encodeURIComponent(enrolmentNumber)}&prog=${encodeURIComponent(gradecardProg)}&type=1`;
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
   try {
@@ -119,7 +119,7 @@ async function handler(req, res) {
 
   const { data: profile, error: profileError } = await admin
     .from('profile')
-    .select('enrolment_number, programme_code, last_synced_at')
+    .select('enrolment_number, programme_code, gradecard_prog, last_synced_at')
     .eq('user_id', userId)
     .maybeSingle();
 
@@ -143,7 +143,7 @@ async function handler(req, res) {
 
   let html;
   try {
-    html = await fetchGradeCard(profile.enrolment_number);
+    html = await fetchGradeCard(profile.enrolment_number, profile.gradecard_prog || profile.programme_code);
   } catch (err) {
     res.status(502).json({ error: `Could not reach IGNOU's grade card site: ${err.message}` });
     return;
