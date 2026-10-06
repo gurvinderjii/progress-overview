@@ -526,6 +526,28 @@ dialog::backdrop { background: rgba(10, 12, 20, 0.5); backdrop-filter: blur(2px)
 .dialog-actions { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
 .spacer { flex: 1; }
 
+/* --- Skeleton loading state --- */
+
+@keyframes skel-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.skel {
+  color: transparent !important;
+  background: linear-gradient(100deg, var(--surface-2) 25%, var(--border) 50%, var(--surface-2) 75%);
+  background-size: 250% 100%;
+  animation: skel-shimmer 1.6s ease-in-out infinite;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  pointer-events: none;
+}
+.skel-block { display: block; border-radius: 6px; }
+.skel-pill { display: inline-block; border-radius: 999px; }
+
+.hero-ring.is-loading .ring-track,
+.hero-ring.is-loading .ring-progress { opacity: 0.35; }
+.hero-ring.is-loading .ring-label { visibility: hidden; }
+
 /* --- Scrollbars (webkit) --- */
 .breakdown-list::-webkit-scrollbar { width: 6px; }
 .breakdown-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }

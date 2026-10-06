@@ -210,15 +210,23 @@ function formatSyncTime(iso) {
   return new Date(iso).toLocaleDateString();
 }
 
+function clearSkeleton(el, text) {
+  el.textContent = text;
+  el.classList.remove('skel', 'skel-block', 'skel-pill');
+  el.removeAttribute('style');
+}
+
 function renderHeader() {
   const { student } = state.data;
   const courses = getVisibleCourses();
-  document.getElementById('avatar').textContent = initials(student.name);
-  document.getElementById('studentName').textContent = student.name || student.enrolmentNumber;
-  document.getElementById('studentProgram').textContent = student.name
-    ? `${student.program} · ${student.institution}`
-    : 'Syncing your record from IGNOU for the first time…';
-  document.getElementById('syncStatus').textContent = `Last synced: ${formatSyncTime(student.lastSyncedAt)}`;
+  clearSkeleton(document.getElementById('avatar'), initials(student.name));
+  clearSkeleton(document.getElementById('studentName'), student.name || student.enrolmentNumber);
+  clearSkeleton(
+    document.getElementById('studentProgram'),
+    student.name ? `${student.program} · ${student.institution}` : 'Syncing your record from IGNOU for the first time…'
+  );
+  clearSkeleton(document.getElementById('syncStatus'), `Last synced: ${formatSyncTime(student.lastSyncedAt)}`);
+  document.getElementById('heroRing').classList.remove('is-loading');
 
   const meta = document.getElementById('headerMeta');
   meta.innerHTML = '';

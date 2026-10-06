@@ -29,13 +29,17 @@
 
   <section class="hero">
     <div class="hero-profile">
-      <div class="avatar" id="avatar">·</div>
+      <div class="avatar skel" id="avatar">·</div>
       <div class="hero-info">
-        <h1 id="studentName">Loading…</h1>
-        <p id="studentProgram" class="hero-sub"></p>
-        <div class="hero-tags" id="headerMeta"></div>
+        <h1 id="studentName" class="skel skel-block" style="width:170px;height:24px;">Loading…</h1>
+        <p id="studentProgram" class="hero-sub skel skel-block" style="width:260px;height:15px;margin-top:8px;"></p>
+        <div class="hero-tags" id="headerMeta">
+          <span class="skel skel-pill" style="width:110px;height:24px;"></span>
+          <span class="skel skel-pill" style="width:170px;height:24px;"></span>
+          <span class="skel skel-pill" style="width:100px;height:24px;"></span>
+        </div>
         <div class="hero-sync">
-          <span id="syncStatus" class="muted sync-status">Last synced: —</span>
+          <span id="syncStatus" class="muted sync-status skel skel-block" style="width:95px;height:13px;">Last synced: —</span>
           <button id="syncBtn" class="btn btn-ghost btn-sync" type="button">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
             Sync Now
@@ -43,7 +47,7 @@
         </div>
       </div>
     </div>
-    <div class="hero-ring">
+    <div class="hero-ring is-loading" id="heroRing">
       <svg class="ring" viewBox="0 0 120 120">
         <circle class="ring-track" cx="60" cy="60" r="52"/>
         <circle class="ring-progress" id="ringProgress" cx="60" cy="60" r="52"/>
@@ -60,7 +64,12 @@
     <button class="view-switch-btn" data-mode="all" type="button" role="tab">Full Programme</button>
   </div>
 
-  <section class="stat-grid" id="summary"></section>
+  <section class="stat-grid" id="summary">
+    <div class="stat-card"><span class="skel skel-block" style="width:34px;height:34px;border-radius:10px;"></span><div style="margin-top:10px;"><div class="skel skel-block" style="width:64px;height:22px;"></div><div class="skel skel-block" style="width:100px;height:12px;margin-top:6px;"></div></div></div>
+    <div class="stat-card"><span class="skel skel-block" style="width:34px;height:34px;border-radius:10px;"></span><div style="margin-top:10px;"><div class="skel skel-block" style="width:40px;height:22px;"></div><div class="skel skel-block" style="width:120px;height:12px;margin-top:6px;"></div></div></div>
+    <div class="stat-card"><span class="skel skel-block" style="width:34px;height:34px;border-radius:10px;"></span><div style="margin-top:10px;"><div class="skel skel-block" style="width:40px;height:22px;"></div><div class="skel skel-block" style="width:110px;height:12px;margin-top:6px;"></div></div></div>
+    <div class="stat-card"><span class="skel skel-block" style="width:34px;height:34px;border-radius:10px;"></span><div style="margin-top:10px;"><div class="skel skel-block" style="width:40px;height:22px;"></div><div class="skel skel-block" style="width:95px;height:12px;margin-top:6px;"></div></div></div>
+  </section>
 
   <section class="panel">
     <div class="panel-head">
@@ -68,7 +77,12 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg>
       </span>Pending</h2>
     </div>
-    <div id="pendingList" class="pending-list"></div>
+    <div id="pendingList" class="pending-list">
+      <div class="skel skel-block" style="height:38px;"></div>
+      <div class="skel skel-block" style="height:38px;"></div>
+      <div class="skel skel-block" style="height:38px;"></div>
+      <div class="skel skel-block" style="height:38px;"></div>
+    </div>
   </section>
 
   <section class="panel">
@@ -78,7 +92,11 @@
       </span>Pending Breakdown</h2>
       <p class="muted breakdown-note">IGNOU UG rule: assignment, term-end theory and term-end practical must each independently reach 35% — a strong score in one doesn't offset a failed one. Courses IGNOU has already marked COMPLETED are excluded here regardless of the exact cutoff.</p>
     </div>
-    <div id="pendingBreakdown" class="breakdown"></div>
+    <div id="pendingBreakdown" class="breakdown">
+      <div class="skel skel-block" style="height:180px;"></div>
+      <div class="skel skel-block" style="height:180px;"></div>
+      <div class="skel skel-block" style="height:180px;"></div>
+    </div>
   </section>
 
   <section class="panel">
@@ -91,7 +109,11 @@
         Add Course
       </button>
     </div>
-    <div id="semesterGroups" class="semester-groups"></div>
+    <div id="semesterGroups" class="semester-groups">
+      <div class="skel skel-block" style="height:72px;"></div>
+      <div class="skel skel-block" style="height:72px;"></div>
+      <div class="skel skel-block" style="height:72px;"></div>
+    </div>
   </section>
 
 </div>
