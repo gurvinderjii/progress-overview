@@ -1,5 +1,7 @@
 # Progress Overview
 
+![Progress Overview landing page](docs/screenshot.jpg)
+
 A degree progress dashboard for IGNOU BCAOL students. Create an account with your enrollment number, and your real grade card — assignment marks, term-end theory/practical scores, course-by-course status — is synced automatically from IGNOU's own public grade card site. No IGNOU password is ever collected.
 
 **Live site:** [bca.igurvinder.in](https://bca.igurvinder.in)
